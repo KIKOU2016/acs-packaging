@@ -414,6 +414,25 @@
                 <artifactId>cglib</artifactId>
                 <version>3.2.9</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-parsers</artifactId>
+                <version>1.17-20180201-alfresco-patched</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.tdunning</groupId>
+                        <artifactId>json</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>asm</groupId>
+                        <artifactId>asm</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <!-- Newer cxf libs, see REPO-3131 -->
             <dependency>
                 <groupId>org.apache.cxf</groupId>
