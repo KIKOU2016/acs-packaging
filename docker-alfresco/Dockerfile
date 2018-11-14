@@ -9,6 +9,7 @@ ARG resource_path=target
 RUN mkdir -p /usr/local/tomcat/shared/classes/alfresco/extension && \
     mkdir /usr/local/tomcat/alfresco-mmt
 RUN touch /usr/local/tomcat/shared/classes/alfresco-global.properties
+COPY custom-aos-metadata-mapping-context.xml /usr/local/tomcat/shared/classes/alfresco/extension/
 
 # You need to run `mvn clean install` in the root of this project to update the following dependencies
 # Copy the WAR files to the appropriate location for your application server
