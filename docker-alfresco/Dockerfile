@@ -55,6 +55,9 @@ RUN mkdir /usr/local/tomcat/webapps/ROOT && cd /usr/local/tomcat/webapps/ROOT &&
 
 RUN mkdir -p /usr/local/tomcat/webapps/alfresco/WEB-INF/classes/org/alfresco/module/aosmodule/vfs
 COPY DocumentNode.class /usr/local/tomcat/webapps/alfresco/WEB-INF/classes/org/alfresco/module/aosmodule/vfs/
+
+RUN mkdir -p /usr/local/tomcat/webapps/alfresco/WEB-INF/classes/alfresco/module/aos-module/context
+COPY service-context.xml /usr/local/tomcat/webapps/alfresco/WEB-INF/classes/alfresco/module/aos-module/context/
 # To remote debug into this image add: EXPOSE 8000
 # Changes are also required to the docker-compose/docker-compose.yml file.
 # EXPOSE 8000

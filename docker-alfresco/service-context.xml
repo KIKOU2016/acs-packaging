@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ * Copyright 2005-2015 Alfresco Software, Ltd.  All rights reserved.
+ *
+ * This file is part of a proprietary Alfresco module.
+ *
+ * License rights for this program are granted under the terms of the "Alfresco
+ * Component License", which defines the permitted uses of the module.
+ * License terms can be found in the file license.txt distributed with this module.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+    
+    <bean id="aosActivityPoster" class="org.alfresco.repo.webdav.ActivityPosterImpl">
+        <property name="appTool" value="Sharepoint"/>
+        <property name="poster" ref="activitiesPoster" />
+    </bean>
+
+    <bean id="AosVirtualFileSystem" class="org.alfresco.module.aosmodule.vfs.AlfrescoVirtualFileSystem">
+        <property name="authenticationService">
+            <ref bean="authenticationService" />
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+        <property name="fileFolderService">
+            <ref bean="FileFolderService" />
+        </property>
+        <property name="checkOutCheckInService">
+            <ref bean="CheckOutCheckInService" />
+        </property>
+        <property name="lockService">
+            <ref bean="LockService" />
+        </property>
+        <property name="versionService">
+         <ref bean="VersionService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="DictionaryService" />
+        </property>
+        <property name="namespaceService">
+            <ref bean="NamespaceService" />
+        </property>
+        <property name="mimetypeService">
+            <ref bean="MimetypeService" />
+        </property>
+        <property name="searchService">
+            <ref bean="SearchService" />
+        </property>
+        <property name="policyBehaviourFilter">
+            <ref bean="policyBehaviourFilter" />
+        </property>
+        <property name="transactionService">
+            <ref bean="TransactionService" />
+        </property>
+        <property name="tenantService">
+            <ref bean="tenantService" />
+        </property>
+        <property name="siteService">
+            <ref bean="SiteService" />
+        </property>
+        <property name="webDavHelper">
+            <ref bean="webDAVHelper" />
+        </property>
+        <property name="webDavInitParams">
+            <ref bean="webdav.initParams" />
+        </property>
+        <property name="authenticationContext">
+            <ref bean="authenticationContext" />
+        </property>
+        <property name="activityPoster">
+            <ref bean="aosActivityPoster" />
+        </property>
+        <property name="dataModelMappingConfiguration">
+            <ref bean="aosDataModelMappingConfiguration" />
+        </property>
+        <property name="ioContentFilterRegistry">
+            <ref bean="aosIOContentFilterRegistry" />
+        </property>
+        <property name="singletonCache">
+            <ref bean="immutableSingletonCache" />
+        </property>
+        <property name="baseUrlOverwrite">
+            <value>${aos.baseUrlOverwrite}</value>
+        </property>
+        <property name="sitePathOverwrite">
+            <value>${aos.sitePathOverwrite}</value>
+        </property>
+        <property name="filterIgnoresOOXMLProtected">
+            <value>${aos.contentFilter.ignoreOOXMLProtected}</value>
+        </property>
+    </bean>
+
+    <bean id="AosAuthenticationFilter" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces">
+            <value>org.alfresco.repo.web.filter.beans.DependencyInjectedFilter</value>
+        </property>
+        <property name="target">
+            <ref bean="WebDavAuthenticationFilter"/>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <idref bean="AosWebDavAuthenticationFilterInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="AosWebDavAuthenticationFilterInterceptor" class="org.alfresco.module.aosmodule.auth.AosWebDavAuthenticationFilterInterceptor">
+    </bean>
+   
+    <bean id="AosFileDialogWebViewRegistry" class="org.alfresco.module.aosmodule.service.FileDialogWebViewRegistry" />
+
+    <bean id="aosBaseFileDialogWebViewConfiguration" class="org.alfresco.module.aosmodule.service.StandardFileDialogWebViewConfiguration" abstract="true" init-method="register">
+        <property name="registry">
+            <ref bean="AosFileDialogWebViewRegistry" />
+        </property>
+    </bean>
+   
+    <bean id="aosStandardFileDialogWebViewConfiguration" parent="aosBaseFileDialogWebViewConfiguration">
+        <property name="pathPattern">
+            <value>/.*</value>
+        </property>
+        <property name="templateLocation">
+            <value>alfresco/module/aos-module/templates/FileDialog.ftl</value>
+        </property>
+    </bean>
+   
+    <bean id="aosIOContentFilterRegistry" class="org.alfresco.module.aosmodule.metadata.StandardIOContentFilterRegistry" />
+   
+    <bean id="aosBaseContentFilter" class="org.alfresco.module.aosmodule.metadata.AbstractContentFilter" abstract="true" init-method="register">
+        <property name="registry">
+            <ref bean="aosIOContentFilterRegistry" />
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+    </bean>
+    
+    <bean id="aosBaseDataModelMappingConfiguration" class="org.alfresco.module.aosmodule.metadata.DataModelMappingConfiguration" abstract="true">
+        <property name="dictionaryService">
+            <ref bean="DictionaryService" />
+        </property>
+        <property name="documentRootType">
+            <value>{http://www.alfresco.org/model/content/1.0}content</value>
+        </property>
+        <property name="folderRootType">
+            <value>{http://www.alfresco.org/model/content/1.0}folder</value>
+        </property>
+        <property name="includedTypesPatterns">
+            <list>
+            </list>
+        </property>
+        <property name="excludedTypesPatterns">
+            <list>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}dictionaryModel\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}savedquery\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}thumbnail\E</value>
+            </list>
+        </property>
+        <property name="includedAspectsPatterns">
+            <list>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}titled\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}auditable\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}complianceable\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}ownable\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}effectivity\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}summarizable\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}geographic\E</value>
+            </list>
+        </property>
+        <property name="excludedAspectsPatterns">
+            <list>
+                <value>\Q{http://www.alfresco.org/model/system/1.0}\E.*</value>
+                <value>\Q{http://www.alfresco.org/model/rendition/1.0}\E.*</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}lockable\E</value>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}versionable\E</value>
+            </list>
+        </property>
+        <property name="includedPropertiesPatterns">
+            <list>
+                <value>.*</value>
+            </list>
+        </property>
+        <property name="excludedPropertiesPatterns">
+            <list>
+                <value>\Q{http://www.alfresco.org/model/content/1.0}name\E</value>
+            </list>
+        </property>
+        <property name="includedInstantiableTypesPatterns">
+            <list>
+            </list>
+        </property>
+        <property name="excludedInstantiableTypesPatterns">
+            <list>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="aosDataModelMappingConfiguration" class="org.alfresco.module.aosmodule.metadata.StandardDataModelMappingConfiguration" parent="aosBaseDataModelMappingConfiguration">
+    </bean>
+   
+    <bean id="aosServerPropertiesProvider" class="org.alfresco.module.aosmodule.metadata.StandardServerPropertiesProvider">
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="DictionaryService" />
+        </property>
+        <property name="namespaceService">
+            <ref bean="NamespaceService" />
+        </property>
+        <property name="dataModelMappingConfiguration">
+            <ref bean="aosDataModelMappingConfiguration" />
+        </property>
+        <property name="titleProperty">
+            <value>{http://www.alfresco.org/model/content/1.0}title</value>
+        </property>
+    </bean>
+
+    <bean id="aosOLEFileContentOutputFilter" class="org.alfresco.module.aosmodule.metadata.OLEFileContentFilter" parent="aosBaseContentFilter">
+        <property name="outputFilter">
+            <value>true</value>
+        </property>
+        <property name="restrictedToMimetypes">
+            <list>
+                <value>application/msword</value>
+                <value>application/vnd.ms-word</value>
+                <value>application/msexcel</value>
+                <value>application/vnd.ms-excel</value>
+                <value>application/mspowerpoint</value>
+                <value>application/vnd.ms-powerpoint</value>
+                <value></value>
+            </list>
+        </property>
+        <property name="processors">
+            <list>
+                <bean class="org.alfresco.module.aosmodule.metadata.OLEServerPropertiesInjector">
+                    <property name="nodeService">
+                        <ref bean="NodeService" />
+                    </property>
+                    <property name="dictionaryService">
+                        <ref bean="DictionaryService" />
+                    </property>
+                    <property name="dataModelMappingConfiguration">
+                        <ref bean="aosDataModelMappingConfiguration" />
+                    </property>
+                    <property name="serverPropertiesProvider">
+                        <ref bean="aosServerPropertiesProvider" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="aosOOXMLFileContentOutputFilter" class="org.alfresco.module.aosmodule.metadata.OOXMLFileContentFilter" parent="aosBaseContentFilter">
+        <property name="outputFilter">
+            <value>true</value>
+        </property>
+        <property name="restrictedToMimetypes">
+            <list>
+                <value>application/vnd.openxmlformats-officedocument.wordprocessingml.document</value>
+                <value>application/vnd.ms-word.document.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.wordprocessingml.template</value>
+                <value>application/vnd.ms-word.template.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</value>
+                <value>application/vnd.openxmlformats-officedocument.spreadsheetml.template</value>
+                <value>application/vnd.ms-excel.sheet.macroenabled.12</value>
+                <value>application/vnd.ms-excel.template.macroenabled.12</value>
+                <value>application/vnd.ms-excel.addin.macroenabled.12</value>
+                <value>application/vnd.ms-excel.sheet.binary.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.presentationml.presentation</value>
+                <value>application/vnd.ms-powerpoint.presentation.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.presentationml.slideshow</value>
+                <value>application/vnd.ms-powerpoint.slideshow.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.presentationml.template</value>
+                <value>application/vnd.ms-powerpoint.template.macroenabled.12</value>
+                <value>application/vnd.ms-powerpoint.addin.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.presentationml.slide</value>
+                <value>application/vnd.ms-powerpoint.slide.macroEnabled.12</value>
+            </list>
+        </property>
+        <property name="processors">
+            <list>
+                <bean class="org.alfresco.module.aosmodule.metadata.OOXMLServerPropertiesInjector">
+                    <property name="nodeService">
+                        <ref bean="NodeService" />
+                    </property>
+                    <property name="dictionaryService">
+                        <ref bean="DictionaryService" />
+                    </property>
+                    <property name="dataModelMappingConfiguration">
+                        <ref bean="aosDataModelMappingConfiguration" />
+                    </property>
+                    <property name="serverPropertiesProvider">
+                        <ref bean="aosServerPropertiesProvider" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="aosOOXMLFileContentInputFilter" class="org.alfresco.module.aosmodule.metadata.OOXMLFileContentFilter" parent="aosBaseContentFilter">
+        <property name="inputFilter">
+            <value>true</value>
+        </property>
+        <property name="restrictedToMimetypes">
+            <list>
+                <value>application/vnd.openxmlformats-officedocument.wordprocessingml.document</value>
+                <value>application/vnd.ms-word.document.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.wordprocessingml.template</value>
+                <value>application/vnd.ms-word.template.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</value>
+                <value>application/vnd.openxmlformats-officedocument.spreadsheetml.template</value>
+                <value>application/vnd.ms-excel.sheet.macroenabled.12</value>
+                <value>application/vnd.ms-excel.template.macroenabled.12</value>
+                <value>application/vnd.ms-excel.addin.macroenabled.12</value>
+                <value>application/vnd.ms-excel.sheet.binary.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.presentationml.presentation</value>
+                <value>application/vnd.ms-powerpoint.presentation.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.presentationml.slideshow</value>
+                <value>application/vnd.ms-powerpoint.slideshow.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.presentationml.template</value>
+                <value>application/vnd.ms-powerpoint.template.macroenabled.12</value>
+                <value>application/vnd.ms-powerpoint.addin.macroenabled.12</value>
+                <value>application/vnd.openxmlformats-officedocument.presentationml.slide</value>
+                <value>application/vnd.ms-powerpoint.slide.macroEnabled.12</value>
+            </list>
+        </property>
+        <property name="processors">
+            <list>
+                <bean class="org.alfresco.module.aosmodule.metadata.OOXMLServerPropertiesExtractor">
+                    <property name="nodeService">
+                        <ref bean="NodeService" />
+                    </property>
+                    <property name="dictionaryService">
+                        <ref bean="DictionaryService" />
+                    </property>
+                    <property name="dataModelMappingConfiguration">
+                        <ref bean="aosDataModelMappingConfiguration" />
+                    </property>
+                    <property name="serverPropertiesProvider">
+                        <ref bean="aosServerPropertiesProvider" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="aosOLEFileContentInputFilter" class="org.alfresco.module.aosmodule.metadata.OLEFileContentFilter" parent="aosBaseContentFilter">
+        <property name="inputFilter">
+            <value>true</value>
+        </property>
+        <property name="restrictedToMimetypes">
+            <list>
+                <value>application/msword</value>
+                <value>application/vnd.ms-word</value>
+                <value>application/msexcel</value>
+                <value>application/vnd.ms-excel</value>
+                <value>application/mspowerpoint</value>
+                <value>application/vnd.ms-powerpoint</value>
+                <value></value>
+            </list>
+        </property>
+        <property name="processors">
+            <list>
+                <bean class="org.alfresco.module.aosmodule.metadata.OLEServerPropertiesExtractor">
+                    <property name="nodeService">
+                        <ref bean="NodeService" />
+                    </property>
+                    <property name="dictionaryService">
+                        <ref bean="DictionaryService" />
+                    </property>
+                    <property name="dataModelMappingConfiguration">
+                        <ref bean="aosDataModelMappingConfiguration" />
+                    </property>
+                    <property name="serverPropertiesProvider">
+                        <ref bean="aosServerPropertiesProvider" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+   
+</beans>
