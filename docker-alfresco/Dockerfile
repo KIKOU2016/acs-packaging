@@ -38,6 +38,7 @@ RUN mkdir -p /usr/local/tomcat/amps
 
 # Copy the amps from build context to the appropriate location for your application server
 COPY ${resource_path}/amps /usr/local/tomcat/amps
+COPY alfresco-aos-module-1.3.0-SNAPSHOT.amp /usr/local/tomcat/amps
 
 # Install amps on alfresco.war
 RUN java -jar /usr/local/tomcat/alfresco-mmt/alfresco-mmt*.jar install \
