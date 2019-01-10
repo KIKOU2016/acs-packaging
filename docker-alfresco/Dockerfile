@@ -27,7 +27,7 @@ RUN echo -e '\n\
 jodconverter.enabled=true\n\
 ' >> /usr/local/tomcat/shared/classes/alfresco-global.properties
 
-COPY extension/* /usr/local/tomcat/shared/classes/alfresco/extension
+COPY extension/* /usr/local/tomcat/shared/classes/alfresco/extension/
 
 # RUN echo -e '\n\
 # log4j.logger.org.alfresco.repo.content.transform.TransformerDebug=debug\n\
