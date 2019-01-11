@@ -2,10 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-    
-    <bean id="aosDataModelMappingConfiguration" class="org.alfresco.enterprise.repo.officeservices.metadata.StandardDataModelMappingConfiguration" parent="aosBaseDataModelMappingConfiguration">
+
+    <bean id="aosDataModelMappingConfiguration" class="org.alfresco.module.aosmodule.metadata.StandardDataModelMappingConfiguration" parent="aosBaseDataModelMappingConfiguration">
+        <!-- Use this includedTypesPatterns property to list patterns for Types to activate property mapping for -->
         <property name="includedTypesPatterns">
-            <list>
+            <list merge="true">
                 <value>.*</value>
             </list>
         </property>
@@ -19,10 +20,11 @@
             </list>
         </property>
         -->
-        <!-- By default, the base mapping configuration includes all aspects with the catch-all wildcard '.*'. You can overwrite this to only include specific aspects -->
+        <!-- By default, the base mapping configuration includes some aspects from the contentModel. You can either replace this list (merge="false") with your -->
+        <!-- own list of aspects or extend this list (merge="true") with additional aspects -->
         <!--
         <property name="includedAspectsPatterns">
-            <list>
+            <list merge="true">
                 <value>\Q{http://www.alfresco.org/model/sample/1.0}\E.*</value>
             </list>
         </property>
@@ -69,5 +71,5 @@
         </property>
         -->
     </bean>
-   
+
 </beans>
