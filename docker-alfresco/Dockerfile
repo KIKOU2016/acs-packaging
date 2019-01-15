@@ -30,10 +30,8 @@ jodconverter.enabled=true\n\
 COPY extension/* /usr/local/tomcat/shared/classes/alfresco/extension/
 
 RUN echo -e '\n\
- log4j.logger.org.alfresco.repo.admin=debug\n\
- log4j.logger.org.alfresco.repo.dictionary=debug\n\
- log4j.logger.org.alfresco.officeservices=debug\n\
- log4j.logger.org.alfresco.module.aosmodule=debug\n\
+ log4j.category.org.alfresco.officeservices=trace\n\
+ log4j.logger.org.alfresco.module.aosmodule=trace\n\
  ' >> /usr/local/tomcat/shared/classes/alfresco/extension/custom-log4j.properties
 
 RUN mkdir -p /usr/local/tomcat/amps
